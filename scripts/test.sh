@@ -6,6 +6,18 @@ LIVEPATCH_CALC_MOD=livepatch-calc.ko
 
 source scripts/eval.sh
 
+wait_for_livepatch_calc_disabled() {
+    local times=0 # 10-second waiting time
+    while [ -d /sys/kernel/livepatch/livepatch_calc ]; do
+        sleep 1
+        times=$(($times+1))
+
+        if [ $times -gt 10 ]; then
+            break;
+        fi
+    done
+}
+
 test_op() {
     local expression=$1 
     echo "Testing " ${expression} "..."
@@ -79,9 +91,9 @@ test_op 'nop()'
 dmesg | tail -n 6
 echo "Disabling livepatch..."
 sudo sh -c "echo 0 > /sys/kernel/livepatch/livepatch_calc/enabled"
-sleep 2
-sudo rmmod livepatch-calc
+wait_for_livepatch_calc_disabled
 
+sudo rmmod livepatch-calc
 sudo rmmod calc
 
 # epilogue
