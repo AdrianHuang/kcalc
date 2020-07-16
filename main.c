@@ -182,8 +182,7 @@ static int __init calc_init(void)
 static void __exit calc_exit(void)
 {
     device_destroy(char_class, MKDEV(major, 0)); /* remove the device */
-    class_unregister(char_class);          /* unregister the device class */
-    class_destroy(char_class);             /* remove the device class */
+    class_destroy(char_class);                   /* remove the device class */
     unregister_chrdev(major, DEVICE_NAME); /* unregister the major number */
     pr_info("Goodbye!\n");
 }
