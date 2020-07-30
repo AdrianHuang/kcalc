@@ -738,15 +738,15 @@ struct expr *expr_create(const char *s,
 
     struct expr *result = NULL;
 
-    vec_expr_t es = vec_init();
-    vec_str_t os = vec_init();
-    vec_arg_t as = vec_init();
+    define_vec(vec_expr_t, es);
+    define_vec(vec_str_t, os);
+    define_vec(vec_arg_t, as);
 
     struct macro {
         char *name;
         vec_expr_t body;
     };
-    vec(struct macro) macros = vec_init();
+    define_vec(vec(struct macro), macros);
 
     int flags = EXPR_TDEFAULT;
     int paren = EXPR_PAREN_ALLOWED;
@@ -819,7 +819,8 @@ struct expr *expr_create(const char *s,
             if (paren == EXPR_PAREN_EXPECTED) {
                 struct expr_string str = {"{", 1};
                 vec_push(&os, str);
-                struct expr_arg arg = {vec_len(&os), vec_len(&es), vec_init()};
+                struct expr_arg arg = {vec_len(&os), vec_len(&es),
+                                       vec_init(arg.args)};
                 vec_push(&as, arg);
             } else if (paren == EXPR_PAREN_ALLOWED) {
                 struct expr_string str = {"(", 1};

@@ -22,10 +22,18 @@ extern "C" {
         int len; \
         int cap; \
     }
-#define vec_init() \
-    {              \
-        NULL, 0, 0 \
+
+#define PRE_ALLOCATED_VEC_NR 4
+
+#define vec_init(var)                                                   \
+    {                                                                   \
+        (__typeof__(var.buf)) krealloc(                                 \
+            NULL, PRE_ALLOCATED_VEC_NR * sizeof(*var.buf), GFP_KERNEL), \
+            0, PRE_ALLOCATED_VEC_NR                                     \
     }
+
+#define define_vec(v, var) v var = vec_init(var);
+
 #define vec_len(v) ((v)->len)
 #define vec_unpack(v) \
     (char **) &(v)->buf, &(v)->len, &(v)->cap, sizeof(*(v)->buf)
