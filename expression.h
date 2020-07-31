@@ -16,6 +16,51 @@
 extern "C" {
 #endif
 
+enum expr_type {
+    OP_UNKNOWN,
+    OP_UNARY_MINUS,
+    OP_UNARY_LOGICAL_NOT,
+    OP_UNARY_BITWISE_NOT,
+
+    OP_POWER,
+    OP_DIVIDE,
+    OP_MULTIPLY,
+    OP_REMAINDER,
+
+    OP_PLUS,
+    OP_MINUS,
+
+    OP_SHL,
+    OP_SHR,
+
+    OP_LT,
+    OP_LE,
+    OP_GT,
+    OP_GE,
+    OP_EQ,
+    OP_NE,
+
+    OP_BITWISE_AND,
+    OP_BITWISE_OR,
+    OP_BITWISE_XOR,
+
+    OP_LOGICAL_AND,
+    OP_LOGICAL_OR,
+
+    OP_ASSIGN,
+    OP_COMMA,
+
+    OP_CONST,
+    OP_VAR,
+    OP_FUNC,
+};
+
+#define FIXED_1 (1 << 4)
+#define GET_NUM(n) ((n) >> 4)
+#define NAN_INT ((1 << 4) | ((1 << 4) - 1))
+#define INF_INT ((1 << 5) | ((1 << 4) - 1))
+#define MASK(n) (((n) > 0) << 4)
+
 #define vec(T)   \
     struct {     \
         T *buf;  \

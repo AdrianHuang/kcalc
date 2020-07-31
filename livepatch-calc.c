@@ -28,6 +28,64 @@ int livepatch_nop(struct expr_func *f, vec_expr_t args, void *c)
     return 0;
 }
 
+void livepatch_fib_cleanup(struct expr_func *f, void *c)
+{
+    /* suppress compilation warnings */
+    (void) f;
+    (void) c;
+}
+
+static int fib_sequence_fast_dobuling_clz(int k)
+{
+    int a = 0, b = FIXED_1;
+
+    k = GET_NUM(k);
+    if (!k)
+        return 0;
+
+    for (int i = ilog2(k); i >= 0; i--) {
+        int t1, t2;
+
+        t1 = a * ((b << 1) - a);
+        t2 = b * b + a * a;
+
+        /*
+         * Reflect the 'correct' fixed-point value by dividing
+         * FIXED_1 since the 't1' and 't2' calculation involves
+         * multiplication operator.
+         */
+        a = t1 / FIXED_1;
+        b = t2 / FIXED_1;
+
+        if (k & (1ULL << i)) {
+            t1 = a + b;
+            a = b;
+            b = t1;
+        }
+    }
+
+    return a;
+}
+
+int livepatch_fib(struct expr_func *f, vec_expr_t args, void *c)
+{
+    struct expr *e = &args.buf[0];
+
+    pr_err("function fib is now patched\n");
+
+    if (!e) {
+        printk("expr struct NULL\n");
+        return -1;
+    }
+
+    if (e->type != OP_CONST) {
+        printk("fib: argument is not a constant value!\n");
+        return -1;
+    }
+
+    return fib_sequence_fast_dobuling_clz(e->param.num.value);
+}
+
 /* clang-format off */
 static struct klp_func funcs[] = {
     {
@@ -37,6 +95,14 @@ static struct klp_func funcs[] = {
     {
         .old_name = "user_func_nop_cleanup",
         .new_func = livepatch_nop_cleanup,
+    },
+    {
+        .old_name = "user_func_fib",
+        .new_func = livepatch_fib,
+    },
+    {
+        .old_name = "user_func_fib_cleanup",
+        .new_func = livepatch_fib_cleanup,
     },
     {},
 };

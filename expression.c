@@ -6,10 +6,6 @@
 #include <linux/module.h>
 #include <linux/string.h>
 
-#define GET_NUM(n) ((n) >> 4)
-#define NAN_INT ((1 << 4) | ((1 << 4) - 1))
-#define INF_INT ((1 << 5) | ((1 << 4) - 1))
-#define MASK(n) (((n) > 0) << 4)
 /*
  * LSB 4 bits for precision, 2^3, one for sign
  * MSB 28 bits for integer
@@ -49,45 +45,6 @@ static int isNan(int x)
 }
 
 enum compare_type { LOWER = 1, EQUAL = 2, GREATER = 4 };
-
-enum expr_type {
-    OP_UNKNOWN,
-    OP_UNARY_MINUS,
-    OP_UNARY_LOGICAL_NOT,
-    OP_UNARY_BITWISE_NOT,
-
-    OP_POWER,
-    OP_DIVIDE,
-    OP_MULTIPLY,
-    OP_REMAINDER,
-
-    OP_PLUS,
-    OP_MINUS,
-
-    OP_SHL,
-    OP_SHR,
-
-    OP_LT,
-    OP_LE,
-    OP_GT,
-    OP_GE,
-    OP_EQ,
-    OP_NE,
-
-    OP_BITWISE_AND,
-    OP_BITWISE_OR,
-    OP_BITWISE_XOR,
-
-    OP_LOGICAL_AND,
-    OP_LOGICAL_OR,
-
-    OP_ASSIGN,
-    OP_COMMA,
-
-    OP_CONST,
-    OP_VAR,
-    OP_FUNC,
-};
 
 static int prec[] = {0, 1, 1, 1, 2, 2, 2, 2, 3,  3,  4,  4, 5, 5,
                      5, 5, 5, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0};
