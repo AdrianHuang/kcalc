@@ -27,6 +27,9 @@ static int GET_FRAC(int n)
 
 static int FP2INT(int n, int d)
 {
+    if (!d)
+        return (n << 4);
+
     while (n && n % 10 == 0) {
         ++d;
         n /= 10;
