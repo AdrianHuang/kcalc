@@ -214,6 +214,10 @@ static int divid(int a, int b)
         return NAN_INT;
     if (n2 == 0)
         return INF_INT;
+    if (n1 < 0) {
+        n1 = ~n1 + 1; /* Equal to: n1 = -n1; */
+        n2 = ~n2 + 1;
+    }
 
     while (n1 * 10 < ((1 << 25) - 1)) {
         --frac1;
