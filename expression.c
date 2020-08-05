@@ -328,6 +328,12 @@ static int plus(int a, int b)
 
     n1 += n2;
 
+    /* Check if the integer field is overflowed. */
+    if (n1 > (n1 << 4)) {
+        printk("Overflow detected for integer field!\n");
+        return NAN_INT;
+    }
+
     return FP2INT(n1, frac1);
 }
 
