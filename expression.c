@@ -34,6 +34,8 @@ static int FP2INT(int n, int d)
         ++d;
         n /= 10;
     }
+
+    /* Prevent getting NAN_INT */
     if (d == -1) {
         n *= 10;
         --d;
@@ -201,7 +203,22 @@ static int mult(int a, int b)
     int n2 = GET_NUM(b);
     int n3 = n1 * n2;
 
-    return FP2INT(n3, (frac1 + frac2));
+    /* Check if the integer field is overflowed. */
+    if (n3 > (n3 << 4)) {
+        printk("Overflow detected for integer field!\n");
+        return NAN_INT;
+    }
+
+    int res = FP2INT(n3, (frac1 + frac2));
+    int res_frac = GET_FRAC(res);
+
+    /* Only need to care about the fraction with the negative number. */
+    if (frac1 < 0 && frac2 < 0 && res_frac > 0) {
+        printk("Overflow detected for fraction field!\n");
+        return NAN_INT;
+    }
+
+    return res;
 }
 
 static int divid(int a, int b)
